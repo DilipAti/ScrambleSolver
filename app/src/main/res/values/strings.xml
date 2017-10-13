@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ScrambleSolver</string>
+    <string name="loading_dictionary">Loading Dictionary...</string>
+    <string name="solve">Solve</string>
+    <string name="enter_the_scrambled_letters">Enter The Scrambled Letters</string>
+    <string name="traversing_anagram_dictionary">Traversing Anagrams Thru Dictionary</string>
 </resources>

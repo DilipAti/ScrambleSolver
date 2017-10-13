@@ -1,14 +1,13 @@
 package dilipati.scramblesolver;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -40,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         solve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                solve.setText("Loading Dictionary...");
                 input1 = scrambledWord1.getText().toString().toLowerCase();
                 input2 = scrambledWord2.getText().toString().toLowerCase();
                 input3 = scrambledWord3.getText().toString().toLowerCase();
@@ -73,8 +71,10 @@ public class MainActivity extends AppCompatActivity {
                 if(!input1.equals("") || !input1.equals("") || !input1.equals("") || !input1.equals("")) {
                     try {
                         loadDictionary(minLength, maxLength, input1, input2, input3, input4);
-                    } catch (FileNotFoundException ignore) {}
-                    solve();
+                        solve();
+                    } catch (FileNotFoundException ignore) {
+                        Toast.makeText(getApplicationContext(), "Unable to load Dictionary", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "Please enter all the 4 scrambled words", Toast.LENGTH_SHORT).show();
                 }
@@ -89,15 +89,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadDictionary(int minLength, int maxLength, String input1, String input2, String input3, String input4) throws FileNotFoundException{
 
+        solve.setBackgroundResource(R.drawable.button_disabled);
+        solve.setText(R.string.loading_dictionary);
         InputStream is = getApplicationContext().getResources().openRawResource(R.raw.words);
         Scanner file = new Scanner(is);
         dictionary = new HashSet<>();
         while (file.hasNext()) {
             String next = file.next();
             if(next.length() >= minLength && next.length() <= maxLength) {
-                if(next.charAt(0) == input1.charAt(0) || next.charAt(0) == input2.charAt(0) || next.charAt(0) == input3.charAt(0) || next.charAt(0) == input4.charAt(0)) {
-                    dictionary.add(next.toLowerCase());
-                }
+                dictionary.add(next.toLowerCase());
             }
         }
     }
@@ -107,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
         properWord2.setText("");
         properWord3.setText("");
         properWord4.setText("");
+
+        solve.setText(R.string.traversing_anagram_dictionary);
+
         if(dictionary!=null) {
             output1 = dictionaryAnagramTraversal(input1);
             output2 = dictionaryAnagramTraversal(input2);
@@ -125,23 +128,24 @@ public class MainActivity extends AppCompatActivity {
                 properWord4.setText(output4);
             }
         }
-        solve.setText("Solve");
+
+        solve.setBackgroundResource(R.drawable.button_rounded_corners);
+        solve.setText(R.string.solve);
     }
 
     private String dictionaryAnagramTraversal(String input){
-        String output = null;
+        StringBuilder output = new StringBuilder("");
         anagramList = new HashSet<>();
         generateAnagrams(input);
         if(anagramList.size()!=0){
             for (String anagram : anagramList) {
                 if(dictionary.contains(anagram)) {
-                    output = anagram;
-                    anagramList = null;
-                    break;
+                    output.append(anagram.toUpperCase()+" ");
                 }
             }
+            anagramList = null;
         }
-        return output;
+        return output.toString();
     }
 
     public void generateAnagrams(String str) {
